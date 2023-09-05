@@ -1,16 +1,20 @@
 import {Link, useNavigate} from 'react-router-dom'
-import {useState} from 'react'
+import {useEffect, useState} from 'react'
 import Alert from '../components/Alert'
 import clientAxios from '../config/ClientAxios'
+import useAuth from '../hook/useAuth'
 
 const Login = () => {
   const [email, setEmail]=useState('')
   const [password, setPassword]=useState('')
   const [alert, setAlert]=useState({})
 
+  const {setAuth}=useAuth()
+
 
   const handleSubmit= async(event)=>{
     event.preventDefault();
+
     if([email, password].includes('')){
       setAlert({
         message: 'Todos los campos son obligatorios',
@@ -25,6 +29,7 @@ const Login = () => {
       setEmail('')
       setPassword('')
       localStorage.setItem('token', data.token)
+      setAuth(data)
 
     }catch(error){
       setAlert({
