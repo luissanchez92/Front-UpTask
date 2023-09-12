@@ -13,6 +13,8 @@ import ConfirmAccount from './paginas/ConfirmAccount'
 import.meta.env.VITE_BACKEND_URL
 import Projects from './paginas/Projects'
 import CreateProject from './paginas/CreateProject'
+import Project from './paginas/Project'
+import EdithProject from './paginas/EdithProject'
 
 
 function App() {
@@ -33,6 +35,8 @@ function App() {
             <Route path='/project' element={<ProtecRoute/>}>
               <Route index element={<Projects/>} />
               <Route path='create-project' element={<CreateProject />}/>
+              <Route path=':id' element={<Project />}/>
+              <Route path='edith/:id' element={<EdithProject />}/>
 
             </Route>
           </Routes>

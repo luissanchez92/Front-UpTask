@@ -1,15 +1,33 @@
-import {useState} from 'react'
+import {useState, useEffect} from 'react'
 import useProject from '../hook/useProject'
 import Alert from './Alert'
+import { useParams } from 'react-router-dom'
 
 const FormProject = () => {
-
+    const [id, setId]=useState(null)
     const [name, setName]=useState('')
     const [description, setDescription]=useState('')
     const [dueDate, setDueDate]=useState('')
     const [client, setClient]=useState('')
 
-    const {viewAlert, alert, submitProject }=useProject()
+
+    const {viewAlert, alert, submitProject, project }=useProject()
+    const params=useParams()
+
+
+    useEffect(()=>{
+        if(params.id ){
+            setId(project._id)
+            setName(project.name)
+            setDescription(project.description)
+            setDueDate(project.dueDate?.split('T')[0])
+            setClient(project.client)
+
+        }
+
+    },[params])
+
+    
 
     const handleSubmit= async(event)=>{
         event.preventDefault()
@@ -21,7 +39,8 @@ const FormProject = () => {
             })
             return;
         }
-        await submitProject({name, description, dueDate, client })
+        await submitProject({name, description, dueDate, client, id })
+        setId(null)
         setName('')
         setDescription('')
         setDueDate('')
@@ -95,7 +114,7 @@ const FormProject = () => {
         </div>
         <input
             type='submit'
-            value='Create Project'
+            value={id ? 'Actualizar Proyecto' : 'Crear Proyecto'}
             className='bg-sky-600 w-full p-3 uppercase font-bold text-white rounded cursor-pointer hover:bg-sky-800 transition-colors '
         />
     </form>
