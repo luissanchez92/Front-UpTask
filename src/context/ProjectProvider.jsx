@@ -10,6 +10,7 @@ const ProjectProvider=({children})=>{
     const [alert, setAlert]=useState({})
     const [project, setProject]=useState({})
     const [waiting, setWaiting]=useState(false)
+    const [modalFormTask, setModalFormTask]=useState(false)
 
     const navigate=useNavigate()
 
@@ -112,7 +113,7 @@ const ProjectProvider=({children})=>{
             setTimeout(()=>{
                 setAlert({})
                 navigate('/project')
-            },3000)
+            },2000)
 
         }catch(error){
             console.log(error)
@@ -145,7 +146,61 @@ const ProjectProvider=({children})=>{
     }
 
     const deletedProject=async(id)=>{
-        console.log(id)
+        try{
+            const token=localStorage.getItem('token')
+            if (!token) return;
+
+            const config={
+                headers: {
+                    'Content-Type': 'application/json',
+                    Authorization: `Bearer ${token}`
+                }
+            }
+
+            const {data}=await clientAxios.delete(`/project/${id}`, config)
+            setAlert({
+                message: data.message,
+                error: false
+            })
+
+            //sincronizar state
+            const projectUpdated=projects.filter(projectState=>projectState._id !== id)
+
+            setProjects(projectUpdated)
+
+            setTimeout(()=>{
+                setAlert({})
+                navigate('/project')
+            },1500)
+            
+        }catch(error){
+            console.log(error)
+        }
+    }
+
+    const handlerModalFormTask=()=>{
+        setModalFormTask(!modalFormTask)
+    }
+
+    const submitTask=async(task)=>{
+
+        try{
+            const token=localStorage.getItem('token')
+            if (!token) return;
+
+            const config={
+                headers: {
+                    'Content-Type': 'application/json',
+                    Authorization: `Bearer ${token}`
+                }
+            }
+
+            const {data}= await clientAxios.post('/task', task, config)
+            console.log(data)
+
+        }catch(error){
+            console.log(error)
+        }
     }
 
     return(
@@ -158,7 +213,12 @@ const ProjectProvider=({children})=>{
                 obtainProject,
                 project,
                 waiting,
-                deletedProject
+                deletedProject,
+                modalFormTask,
+                handlerModalFormTask,
+                submitTask
+
+
             }}
         >{children}
         </ProjectContext.Provider>
