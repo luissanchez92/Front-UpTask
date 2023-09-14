@@ -1,4 +1,4 @@
-import { Fragment, useState} from 'react'
+import { Fragment, useState, useEffect} from 'react'
 import { Dialog, Transition } from '@headlessui/react'
 import useProject from '../hook/useProject'
 import Alert from './Alert'
@@ -6,8 +6,9 @@ import { useParams } from 'react-router-dom'
 
 const ModalFormTask = () => {
 
-    const {modalFormTask, handlerModalFormTask, viewAlert, alert, submitTask}=useProject()
+    const {modalFormTask, handlerModalFormTask, viewAlert, alert, submitTask, task}=useProject()
 
+    const [id, setId]=useState('')
     const [name, setName]=useState('')
     const [description, setDescription]=useState('')
     const [priority, setPriority]=useState('')
@@ -17,7 +18,25 @@ const ModalFormTask = () => {
 
     const PRIORITY=['Baja', 'Media', 'Alta']
 
-    const handlerSubmit=(event)=>{
+    useEffect(()=>{
+        if(task._id){
+            setId(task._id)
+            setName(task.name)
+            setDescription(task.description)
+            setPriority(task.priority)
+            setDueDate(task.dueDate?.split('T')[0])
+            return;
+        }
+        setId('')
+        setName('')
+        setDescription('')
+        setPriority('')
+        setDueDate('')
+ 
+
+    },[task])
+
+    const handlerSubmit=async(event)=>{
         event.preventDefault();
 
         if([name, description, priority, dueDate].includes('')){
@@ -27,7 +46,12 @@ const ModalFormTask = () => {
             })
             return;
         }
-        submitTask({name, description, priority, dueDate, project:params.id})
+        await submitTask({ id, name, description, priority, dueDate, project:params.id})
+        setId('')
+        setName('')
+        setDescription('')
+        setPriority('')
+        setDueDate('')
     }
 
     const {message}=alert
@@ -84,7 +108,7 @@ const ModalFormTask = () => {
                             <div className="sm:flex sm:items-start">
                                 <div className="mt-3 text-center sm:mt-0 sm:ml-4 sm:text-left w-full">
                                     <Dialog.Title as="h3" className="text-lg leading-6 font-bold text-gray-900">
-                                        Crear Tarea
+                                        {id ? 'Editar tarea' : 'Crear tarea'}
                                     </Dialog.Title>
 
                                     {message && <Alert alert={alert}/>}
@@ -162,7 +186,7 @@ const ModalFormTask = () => {
 
                                       <input
                                             type='submit'
-                                            value='Crear Tarea'
+                                            value={id ? 'Guardar cambios' : 'Crear tarea'}
                                             className='bg-sky-600 w-full p-3 uppercase font-bold text-white rounded cursor-pointer hover:bg-sky-800 transition-colors text-sm'
                                         />
 

@@ -1,12 +1,13 @@
 import { useParams, Link } from "react-router-dom"
 import useProject from "../hook/useProject"
-import { useEffect, useState } from "react"
+import { useEffect} from "react"
 import Spinner from "../spinner/Spinner"
 import ModalFormTask from "../components/ModalFormTask"
+import ModalDeletedTask from "../components/ModalDeletedTask"
+import Tasks from "../components/Tasks"
 
 const Project = () => {
 
-    const [modal, setModal]=useState(false)
     const params= useParams();
     
     const {obtainProject, project, waiting, handlerModalFormTask}=useProject()
@@ -48,7 +49,23 @@ const Project = () => {
                 Nueva tarea
                 </button>
 
-                <ModalFormTask modal={modal} setModal={setModal}/>
+                <p className="font-bold text-xl mt-10">Tareas del proyecto</p>
+
+                <div className="bg-white shadow mt-10 rounded-lg">
+                  {project.tasks?.length ?
+                  project.tasks?.map(task=>(
+                    <Tasks
+                        key={task._id}
+                        task={task}
+
+                    />
+                  )) : 
+                  <p className="text-center my-5 p-10">Este proyecto no tiene tareas</p>}  
+
+                </div>
+
+                <ModalFormTask />
+                <ModalDeletedTask />
             </>
         )
     )

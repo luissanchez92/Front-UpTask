@@ -17,7 +17,6 @@ const Projects = () => {
             key={project.id}
             projects={project}
           />
-
         ))
         : <p className="text-center text-gray-600 uppercase p-5">No hay proyectos</p>}
       </div>
