@@ -52,6 +52,7 @@ const Register = () => {
       setRepeatPassword('')
 
     }catch(error){
+      console.log(error)
       SetAlert({
         message: error.response.data.message,
         error:true

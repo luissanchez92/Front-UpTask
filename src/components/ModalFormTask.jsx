@@ -46,7 +46,8 @@ const ModalFormTask = () => {
             })
             return;
         }
-        await submitTask({ id, name, description, priority, dueDate, project:params.id})
+        //TODO id
+        await submitTask({ name, description, priority, dueDate, project:params.id})
         setId('')
         setName('')
         setDescription('')

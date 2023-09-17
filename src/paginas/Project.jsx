@@ -5,12 +5,13 @@ import Spinner from "../spinner/Spinner"
 import ModalFormTask from "../components/ModalFormTask"
 import ModalDeletedTask from "../components/ModalDeletedTask"
 import Tasks from "../components/Tasks"
+import Alert from "../components/Alert"
 
 const Project = () => {
 
     const params= useParams();
     
-    const {obtainProject, project, waiting, handlerModalFormTask}=useProject()
+    const {obtainProject, project, waiting, handlerModalFormTask, alert}=useProject()
 
     useEffect(()=>{
         obtainProject(params.id)
@@ -18,6 +19,7 @@ const Project = () => {
     },[])
 
     const {name}=project
+    const {message}=alert
 
     return (
         waiting ? <Spinner/> : (
@@ -51,18 +53,38 @@ const Project = () => {
 
                 <p className="font-bold text-xl mt-10">Tareas del proyecto</p>
 
+                <div className="flex justify-center">
+                    <div className="w-full md:w-1/3 lg:w-1/3 ">
+                        {message && <Alert alert={alert} />}
+                    </div>
+                </div>
+
+
+                
                 <div className="bg-white shadow mt-10 rounded-lg">
                   {project.tasks?.length ?
                   project.tasks?.map(task=>(
                     <Tasks
                         key={task._id}
                         task={task}
-
                     />
                   )) : 
                   <p className="text-center my-5 p-10">Este proyecto no tiene tareas</p>}  
 
                 </div>
+                
+                <div className="flex items-center justify-between mt-10">
+                
+                    <p className="font-bold text-xl mt-10">Colaboradores</p>
+
+                    <Link
+                        to={`/projects/new-collaborator/${project._id}`}
+                        className=" text-gray-400 uppercase font-bold"
+                    >
+                    Añadir
+                    </Link>
+                </div>
+
 
                 <ModalFormTask />
                 <ModalDeletedTask />

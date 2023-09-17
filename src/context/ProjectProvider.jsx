@@ -30,7 +30,8 @@ const ProjectProvider=({children})=>{
                 }
 
                 const {data}= await clientAxios.get('/project', config)
-                setProjects(data)
+                //TODO []
+                setProjects(data )
 
             }catch(error){
                 console.log(error)
@@ -138,7 +139,7 @@ const ProjectProvider=({children})=>{
             }
 
             const {data}= await clientAxios.get(`/project/${id}`, config)
-            setProject(data)
+            setProject(data || {})
 
         }catch(error){
             console.log(error)
@@ -236,18 +237,16 @@ const ProjectProvider=({children})=>{
             }
 
             const {data}= await clientAxios.put(`/task/${task.id}`, task, config)
-            console.log(data)
-          
+            
             //add project-tasks-state
             const projectUpdated={...project}
-            projectUpdated.tasks= projectUpdated.tasks.map(taskState=>taskState._id ===data._id ? data : taskState)
+            projectUpdated.tasks= projectUpdated.tasks?.map(taskState=>taskState._id ===data._id ? data : taskState)
             setProject(projectUpdated)
             setAlert({})
             setModalFormTask(false)
 
         }catch(error){
             console.log(error)
-
         }
 
     }
@@ -262,6 +261,38 @@ const ProjectProvider=({children})=>{
         setTask(task)
         setModalDeleteTask(!modalDeleteTask)
 
+    }
+
+    const deleteTask=async()=>{
+
+        try{
+
+            const token=localStorage.getItem('token')
+            if (!token) return;
+
+            const config={
+                headers: {
+                    'Content-Type': 'application/json',
+                    Authorization: `Bearer ${token}`
+                }
+            }
+
+            const {data}= await clientAxios.delete(`/task/${task._id}`,config)
+            setAlert({
+                message: data.message,
+                error: false
+            });
+
+            //delete project-task-state
+            const projectUpdated={...project}
+            projectUpdated.tasks = projectUpdated.tasks?.filter(taskState=>taskState._id !== task._id)
+            setProject(projectUpdated)
+            setModalDeleteTask(false)
+            setTask({})
+
+        }catch(error){
+            console.log(error)
+        }
     }
 
     return(
@@ -282,12 +313,12 @@ const ProjectProvider=({children})=>{
                 task,
                 handlerModalDeleteTask,
                 modalDeleteTask,
-                setModalDeleteTask
-
-
-
+                setModalDeleteTask,
+                deleteTask
 
             }}
+
+
         >{children}
         </ProjectContext.Provider>
 
