@@ -9,26 +9,27 @@ const AuthProvider=({children})=>{
     const [auth, setAuth]=useState({})
     const [waiting, setWaiting]=useState(true)
 
-    const navigate=useNavigate()
+    //const navigate=useNavigate()
 
     useEffect(()=>{
         const authUser= async()=>{
-            const token=localStorage.getItem('token')
-            if (!token){
-                setWaiting(false)
-                return;
-            }
-            const config={
-                headers:{
-                    'Content-Type': 'application/json',
-                    Authorization: `Bearer ${token}`
-                }
-            }
 
             try{
+                const token=localStorage.getItem('token')
+                if (!token){
+                    setWaiting(false)
+                    return;
+                }
+                const config={
+                    headers:{
+                        'Content-Type': 'application/json',
+                        Authorization: `Bearer ${token}`
+                    }
+                }
+
                 const {data}= await clientAxios.get('/user/profile', config)
                 setAuth(data)
-                navigate('/project')
+                //navigate('/project')
 
             }catch(error){
                 setAuth({})

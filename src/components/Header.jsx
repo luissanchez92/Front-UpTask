@@ -1,17 +1,24 @@
 import {Link} from 'react-router-dom'
+import useProject from '../hook/useProject'
+import Search from './Search'
 
 const Header = () => {
+    const {handleSearch}=useProject()
+
+
   return (
     <header className="px-4 py-5 bg-white border-b">
         <div className="md:flex md:justify-between">
-            <h2 className="text-4xl text-sky-600 font-black text-center">Uptask</h2>
+            <h2 className="text-4xl text-sky-600 font-black text-center mb-5 md:mb-0">Uptask</h2>
 
-            <input
-            type="search"
-            placeholder="Search projects"
-            className="rounded-lg lg:w-96 block p-2 border"
-        />
-            <div className='flex items-center gap-4'>
+            <div className='flex flex-col md:flex-row items-center gap-4'>
+
+                <button
+                    type='button'
+                    className='text-white text-center text-sm bg-sky-600 p-3 rounded-md uppercase font-bold'
+                    onClick={handleSearch}
+                >Buscar Proyectos</button>
+
                 <Link
                     to='/project'
                     className='font-bold uppercase'
@@ -22,6 +29,7 @@ const Header = () => {
                     className='text-white text-center text-sm bg-sky-600 p-3 rounded-md uppercase font-bold'
                 >Close</button>
 
+                <Search />
             </div>
 
         </div>

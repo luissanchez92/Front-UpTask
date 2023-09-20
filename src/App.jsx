@@ -15,7 +15,7 @@ import Projects from './paginas/Projects'
 import CreateProject from './paginas/CreateProject'
 import Project from './paginas/Project'
 import EdithProject from './paginas/EdithProject'
-
+import NewCollaborator from './paginas/NewCollaborator'
 
 function App() {
   
@@ -35,6 +35,7 @@ function App() {
             <Route path='/project' element={<ProtecRoute/>}>
               <Route index element={<Projects/>} />
               <Route path='create-project' element={<CreateProject />}/>
+              <Route path='new-collaborator/:id' element={<NewCollaborator />}/>
               <Route path=':id' element={<Project />}/>
               <Route path='edith/:id' element={<EdithProject />}/>
 

@@ -8,10 +8,10 @@ const Projects = () => {
 
   return (
     <div>
-      <h1 className="text-4xl font-black uppercase">Projects</h1>
+      <h1 className="text-4xl font-black uppercase">Proyectos</h1>
 
       <div className="bg-white shadow mt-10 rounded-lg">
-        {projects.length ?
+        {projects.length>0 ?
         projects.map(project=>(
           <PreviewProjects
             key={project.id}

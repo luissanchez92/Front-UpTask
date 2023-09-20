@@ -8,7 +8,7 @@ const ModalDeletedTask = () => {
  
     return (
         <Transition.Root show={ modalDeleteTask } as={Fragment}>
-            <Dialog as="div" className="fixed z-10 inset-0 overflow-y-auto" onClose={handlerModalDeleteTask }>
+            <Dialog as="div" className="fixed z-10 inset-0 overflow-y-auto" onClose={handlerModalDeleteTask}>
                 <div className="flex items-end justify-center min-h-screen pt-4 px-4 pb-20 text-center sm:block sm:p-0">
                     <Transition.Child
                         as={Fragment}
@@ -45,7 +45,7 @@ const ModalDeletedTask = () => {
                                 <button
                                     type="button"
                                     className="bg-white rounded-md text-gray-400 hover:text-gray-500 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500"
-                                    onClick={ handlerModalDeleteTask  }
+                                    onClick={ handlerModalDeleteTask }
                                 >
                                 <span className="sr-only">Cerrar</span>
                                     <svg xmlns="http://www.w3.org/2000/svg" className="h-6 w-6" viewBox="0 0 20 20" fill="currentColor">
