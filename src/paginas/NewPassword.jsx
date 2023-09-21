@@ -16,7 +16,7 @@ const NewPassword = () => {
   useEffect(()=>{
     const findToken=async()=>{
       try{
-        await clientAxios.get(`/user/forget-password/${token}`)
+        await clientAxios.get(`/api/user/forget-password/${token}`)
         setValidateToken(true)
         setNewPassword('')
 

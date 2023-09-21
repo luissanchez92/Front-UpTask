@@ -39,7 +39,7 @@ const Register = () => {
     SetAlert({})
 
     try{
-      const {data}= await clientAxios.post('/user', {name, email, password})
+      const {data}= await clientAxios.post('/api/user', {name, email, password})
 
       SetAlert({
         message: data.message,

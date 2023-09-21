@@ -9,12 +9,14 @@ import ModalDeleteCollaborator from "../components/ModalDeleteCollaborator"
 import Tasks from "../components/Tasks"
 import Alert from "../components/Alert"
 import Collaborator from "../components/Collaborator"
+import io from 'socket.io-client'
+let socket;
 
 const Project = () => {
 
     const params= useParams();
     
-    const {obtainProject, project, waiting, handlerModalFormTask, alert}=useProject()
+    const {obtainProject, project, waiting, handlerModalFormTask, alert, submitTaskProject, deleteTaskProject}=useProject()
 
     const admin=useAdmin()
 
@@ -22,6 +24,37 @@ const Project = () => {
         obtainProject(params.id)
 
     },[])
+
+    useEffect(()=>{
+        socket=io(import.meta.env.VITE_BACKEND_URL)
+        socket.emit('open project', params.id)
+    },[])
+
+    useEffect(()=>{
+        socket.on('addedTask', (newTask)=>{
+            console.log(newTask, '*****',project._id)
+            if(newTask === project._id){
+                submitTaskProject(newTask)
+            }
+        })
+
+        socket.on('taskDeleted', (deleteTask)=>{
+
+            const projectValue = deleteTask.project
+ 
+            if (typeof projectValue === 'string') {
+                console.log('111', projectValue,'==',project._id )
+                if (projectValue === project._id) {
+                    deleteTaskProject(deleteTask)
+                }
+            } else if(typeof project === 'object') {
+                console.log('2222', projectValue._id, '==', project._id)
+                if (projectValue._id === project._id) {
+                    deleteTaskProject(deleteTask)
+                }
+            }
+        })
+    })
 
     const {name}=project
     const {message}=alert

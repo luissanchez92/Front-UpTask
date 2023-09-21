@@ -27,7 +27,7 @@ const AuthProvider=({children})=>{
                     }
                 }
 
-                const {data}= await clientAxios.get('/user/profile', config)
+                const {data}= await clientAxios.get('/api/user/profile', config)
                 setAuth(data)
                 //navigate('/project')
 

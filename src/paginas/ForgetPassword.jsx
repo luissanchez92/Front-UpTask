@@ -19,7 +19,7 @@ const ForgetPassword = () => {
       return 
     }
     try{
-      const {data}= await clientAxios.post('/user/forget-password', {email})
+      const {data}= await clientAxios.post('/api/user/forget-password', {email})
       setAlert({
         message: data.message,
         error:false

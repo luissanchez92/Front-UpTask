@@ -3,7 +3,6 @@ import PreviewProjects from "../components/PreviewProjects"
 
 
 const Projects = () => {
-
   const {projects}=useProject()
 
   return (

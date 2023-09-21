@@ -1,6 +1,9 @@
 import { useState, createContext, useEffect } from "react";
 import clientAxios from "../config/ClientAxios";
 import {useNavigate} from 'react-router-dom'
+import io from 'socket.io-client'
+
+let socket;
 
 const ProjectContext=createContext();
 
@@ -32,7 +35,7 @@ const ProjectProvider=({children})=>{
                     }
                 }
 
-                const {data}= await clientAxios.get('/project', config)
+                const {data}= await clientAxios.get('/api/project', config)
                 setProjects(data )
 
             }catch(error){
@@ -42,6 +45,11 @@ const ProjectProvider=({children})=>{
         }
         obtainProjects()
 
+    },[])
+
+
+    useEffect(()=>{
+        socket=io(import.meta.env.VITE_BACKEND_URL)
     },[])
 
     const viewAlert=(alert)=>{
@@ -74,7 +82,7 @@ const ProjectProvider=({children})=>{
                 }
             }
 
-            const {data} = await clientAxios.put(`/project/${project.id}`, project, config)
+            const {data} = await clientAxios.put(`/api/project/${project.id}`, project, config)
 
             const projectUpdated=projects.map(projectState=>projectState._id ===data._id ? data : projectState)
             setProjects(projectUpdated)
@@ -108,7 +116,7 @@ const ProjectProvider=({children})=>{
                 }
             }
 
-            const {data}=await clientAxios.post('/project', project, config)
+            const {data}=await clientAxios.post('/api/project', project, config)
             setProjects([...projects, data])
             setAlert({
                 message: 'Proyecto creado correctamente',
@@ -138,7 +146,7 @@ const ProjectProvider=({children})=>{
                 }
             }
 
-            const {data}= await clientAxios.get(`/project/${id}`, config)
+            const {data}= await clientAxios.get(`/api/project/${id}`, config)
             setProject(data)
             setAlert({})
 
@@ -170,7 +178,7 @@ const ProjectProvider=({children})=>{
                 }
             }
 
-            const {data}=await clientAxios.delete(`/project/${id}`, config)
+            const {data}=await clientAxios.delete(`/api/project/${id}`, config)
             setAlert({
                 message: data.message,
                 error: false
@@ -218,7 +226,7 @@ const ProjectProvider=({children})=>{
                 }
             }
 
-            const {data}= await clientAxios.post('/task', task, config)
+            const {data}= await clientAxios.post('/api/task', task, config)
         
             //add task state
             const projectUpdated={...project}
@@ -226,6 +234,10 @@ const ProjectProvider=({children})=>{
             setProject(projectUpdated)
             setAlert({})
             setModalFormTask(false)
+
+            //socket.io
+            socket.emit('newTask', data )
+
 
         }catch(error){
             console.log(error.response.data.message)
@@ -249,7 +261,7 @@ const ProjectProvider=({children})=>{
                 }
             }
 
-            const {data}= await clientAxios.put(`/task/${task.id}`, task, config)
+            const {data}= await clientAxios.put(`/api/task/${task.id}`, task, config)
             
             //add project-tasks-state
             const projectUpdated={...project}
@@ -290,7 +302,7 @@ const ProjectProvider=({children})=>{
                 }
             }
 
-            const {data}= await clientAxios.delete(`/task/${task._id}`,config)
+            const {data}= await clientAxios.delete(`/api/task/${task._id}`,config)
             setAlert({
                 message: data.message,
                 error: false
@@ -301,6 +313,13 @@ const ProjectProvider=({children})=>{
             projectUpdated.tasks = projectUpdated.tasks?.filter(taskState=>taskState._id !== task._id)
             setProject(projectUpdated)
             setModalDeleteTask(false)
+
+            //socket.io
+            socket.emit('deleteTask', task)
+
+            setTimeout(()=>{
+                setAlert({})
+            },1500)
             setTask({})
 
         }catch(error){
@@ -322,7 +341,7 @@ const ProjectProvider=({children})=>{
                 }
             }
 
-            const {data}=await clientAxios.post('/project/collaborator',{email} ,config)
+            const {data}=await clientAxios.post('/api/project/collaborator',{email} ,config)
             setCollaborator(data)
             setAlert({})
 
@@ -348,7 +367,7 @@ const ProjectProvider=({children})=>{
                 }
             }
 
-            const {data}=await clientAxios.post(`/project/collaborator/${project._id}`, email ,config)
+            const {data}=await clientAxios.post(`/api/project/collaborator/${project._id}`, email ,config)
             setAlert({
                 message: data.message,
                 error: false
@@ -384,7 +403,7 @@ const ProjectProvider=({children})=>{
                     Authorization: `Bearer ${token}`
                 }
             }
-            const {data}=await clientAxios.post(`/project/collaborator/delete/${project._id}`, {id: collaborator._id }, config)
+            const {data}=await clientAxios.post(`/api/project/collaborator/delete/${project._id}`, {id: collaborator._id }, config)
             const projectUpdated={...project}
             projectUpdated.collaborators=projectUpdated.collaborators.filter(collaboratorState=>collaboratorState._id !==collaborator._id)
             setProject(projectUpdated)
@@ -413,7 +432,7 @@ const ProjectProvider=({children})=>{
                     Authorization: `Bearer ${token}`
                 }
             }
-            const {data}= await clientAxios.post(`/task/state/${id}`,{}, config)
+            const {data}= await clientAxios.post(`/api/task/state/${id}`,{}, config)
             const projectUpdated={...project}
             projectUpdated.tasks= projectUpdated.tasks.map(taskState=>taskState._id ===data._id ? data : taskState)
             setProject(projectUpdated)
@@ -427,6 +446,22 @@ const ProjectProvider=({children})=>{
 
     const handleSearch=()=>{
         setSearch(!search)
+    }
+
+    //socket.io
+    const submitTaskProject=(newTask)=>{
+        //add task state
+        const projectUpdated={...project}
+        projectUpdated.tasks=[...projectUpdated.tasks, newTask]
+        setProject(projectUpdated)
+
+    }
+
+    const deleteTaskProject=(deleteTask)=>{
+        const projectUpdated={...project}
+        projectUpdated.tasks = projectUpdated.tasks?.filter(taskState=>taskState._id !== deleteTask._id)
+        setProject(projectUpdated)
+
     }
 
 
@@ -458,7 +493,9 @@ const ProjectProvider=({children})=>{
                 deleteCollaborator,
                 completeTask,
                 handleSearch,
-                search
+                search,
+                submitTaskProject,
+                deleteTaskProject
             }}
 
 

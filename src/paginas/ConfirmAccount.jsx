@@ -13,7 +13,7 @@ const ConfirmAccount = () =>{
   useEffect(() => {
     const accountConfirm=async()=>{
       try{
-        const url= `/user/confirm/${id}`
+        const url= `/api/user/confirm/${id}`
         const {data}= await clientAxios.get(url)
         
         setAlert({
