@@ -60,7 +60,7 @@ const FormProject = () => {
             <label
                 className='text-gray-600 uppercase font-bold text-sm'
                 htmlFor='name'
-            >Name Project</label>
+            >Nombre del proyecto</label>
             <input
                 id='name'
                 type='text'
@@ -75,7 +75,7 @@ const FormProject = () => {
             <label
                 className='text-gray-600 uppercase font-bold text-sm'
                 htmlFor='description'
-            >Description</label>
+            >Descripción</label>
             <textarea
                 id='description'
                 className='border-2 w-full p-2 mt-2 placeholder-gray-400 rounded-md uppercase'
@@ -89,7 +89,7 @@ const FormProject = () => {
             <label
                 className='text-gray-600 uppercase font-bold text-sm'
                 htmlFor='due-date'
-            >Due Date</label>
+            >Fecha de entrega</label>
             <input
                 id='due-date'
                 type='date'
@@ -103,7 +103,7 @@ const FormProject = () => {
             <label
                 className='text-gray-600 uppercase font-bold text-sm'
                 htmlFor='name'
-            >Client</label>
+            >Cliente</label>
             <input
                 type='text'
                 className='border-2 w-full p-2 mt-2 placeholder-gray-400 rounded-md uppercase'

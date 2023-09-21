@@ -1,9 +1,17 @@
 import {Link} from 'react-router-dom'
 import useProject from '../hook/useProject'
+import useAuth from '../hook/useAuth'
 import Search from './Search'
 
 const Header = () => {
-    const {handleSearch}=useProject()
+    const {handleSearch, signOff}=useProject()
+    const {signOFF}=useAuth()
+
+    const handleClosed=()=>{
+        signOff()
+        signOFF()
+        localStorage.removeItem('token')
+    }
 
 
   return (
@@ -27,7 +35,8 @@ const Header = () => {
                 <button
                     type='button'
                     className='text-white text-center text-sm bg-sky-600 p-3 rounded-md uppercase font-bold'
-                >Close</button>
+                    onClick={handleClosed}
+                >Cerrar Sesión</button>
 
                 <Search />
             </div>

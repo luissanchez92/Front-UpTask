@@ -16,7 +16,7 @@ const Project = () => {
 
     const params= useParams();
     
-    const {obtainProject, project, waiting, handlerModalFormTask, alert, submitTaskProject, deleteTaskProject}=useProject()
+    const {obtainProject, project, waiting, handlerModalFormTask, alert, submitTaskProject, deleteTaskProject, updateTaskIo, changeState}=useProject()
 
     const admin=useAdmin()
 
@@ -31,10 +31,9 @@ const Project = () => {
     },[])
 
     useEffect(()=>{
-        socket.on('addedTask', (newTask)=>{
-            console.log(newTask, '*****',project._id)
-            if(newTask === project._id){
-                submitTaskProject(newTask)
+        socket.on('addedTask', (data)=>{
+            if(data.project === project._id){
+                submitTaskProject(data)
             }
         })
 
@@ -43,15 +42,25 @@ const Project = () => {
             const projectValue = deleteTask.project
  
             if (typeof projectValue === 'string') {
-                console.log('111', projectValue,'==',project._id )
                 if (projectValue === project._id) {
                     deleteTaskProject(deleteTask)
                 }
-            } else if(typeof project === 'object') {
-                console.log('2222', projectValue._id, '==', project._id)
+            } else if(typeof projectValue === 'object') {
                 if (projectValue._id === project._id) {
                     deleteTaskProject(deleteTask)
                 }
+            }
+        })
+
+        socket.on('taskUpdate', (data)=>{
+            if (data.project._id===project._id){
+                updateTaskIo(data)
+            }
+        })
+
+        socket.on('stateChanged', (data)=>{
+            if (data.project._id===project._id){
+                changeState(data)
             }
         })
     })

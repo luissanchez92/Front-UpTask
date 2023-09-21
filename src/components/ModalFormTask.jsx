@@ -19,7 +19,7 @@ const ModalFormTask = () => {
     const PRIORITY=['Baja', 'Media', 'Alta']
 
     useEffect(()=>{
-        if(task._id){
+        if(task?._id){
             setId(task._id)
             setName(task.name)
             setDescription(task.description)
@@ -46,8 +46,7 @@ const ModalFormTask = () => {
             })
             return;
         }
-        //TODO id
-        await submitTask({ name, description, priority, dueDate, project:params.id})
+        await submitTask({ id, name, description, priority, dueDate, project:params.id})
         setId('')
         setName('')
         setDescription('')

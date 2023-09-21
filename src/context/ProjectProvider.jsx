@@ -2,6 +2,7 @@ import { useState, createContext, useEffect } from "react";
 import clientAxios from "../config/ClientAxios";
 import {useNavigate} from 'react-router-dom'
 import io from 'socket.io-client'
+import useAuth from "../hook/useAuth";
 
 let socket;
 
@@ -21,7 +22,7 @@ const ProjectProvider=({children})=>{
     const [search, setSearch]=useState(false)
 
     const navigate=useNavigate()
-
+    const {auth}=useAuth()
     useEffect(()=>{
         const obtainProjects=async()=>{
             try{
@@ -44,8 +45,7 @@ const ProjectProvider=({children})=>{
 
         }
         obtainProjects()
-
-    },[])
+    },[auth])
 
 
     useEffect(()=>{
@@ -229,9 +229,9 @@ const ProjectProvider=({children})=>{
             const {data}= await clientAxios.post('/api/task', task, config)
         
             //add task state
-            const projectUpdated={...project}
-            projectUpdated.tasks=[...project.tasks, data]
-            setProject(projectUpdated)
+            // const projectUpdated={...project}
+            // projectUpdated.tasks=[...project.tasks, data]
+            // setProject(projectUpdated)
             setAlert({})
             setModalFormTask(false)
 
@@ -248,8 +248,7 @@ const ProjectProvider=({children})=>{
         }
     }
 
-    const  edithTask=async(task)=>{
-
+    const edithTask=async(task)=>{
         try{
             const token=localStorage.getItem('token')
             if (!token) return;
@@ -264,16 +263,18 @@ const ProjectProvider=({children})=>{
             const {data}= await clientAxios.put(`/api/task/${task.id}`, task, config)
             
             //add project-tasks-state
-            const projectUpdated={...project}
-            projectUpdated.tasks= projectUpdated.tasks?.map(taskState=>taskState._id ===data._id ? data : taskState)
-            setProject(projectUpdated)
+            // const projectUpdated={...project}
+            // projectUpdated.tasks= projectUpdated.tasks?.map(taskState=>taskState._id ===data._id ? data : taskState)
+            // setProject(projectUpdated)
             setAlert({})
             setModalFormTask(false)
+
+            //socket.io
+            socket.emit('updateTask', data)
 
         }catch(error){
             console.log(error)
         }
-
     }
 
     const handlerModalEdithTask=(task)=>{
@@ -291,7 +292,6 @@ const ProjectProvider=({children})=>{
     const deleteTask=async()=>{
 
         try{
-
             const token=localStorage.getItem('token')
             if (!token) return;
 
@@ -309,9 +309,9 @@ const ProjectProvider=({children})=>{
             });
 
             //delete project-task-state
-            const projectUpdated={...project}
-            projectUpdated.tasks = projectUpdated.tasks?.filter(taskState=>taskState._id !== task._id)
-            setProject(projectUpdated)
+            // const projectUpdated={...project}
+            // projectUpdated.tasks = projectUpdated.tasks?.filter(taskState=>taskState._id !== task._id)
+            // setProject(projectUpdated)
             setModalDeleteTask(false)
 
             //socket.io
@@ -392,7 +392,6 @@ const ProjectProvider=({children})=>{
     }
 
     const deleteCollaborator=async()=>{
-
         try{
             const token=localStorage.getItem('token')
             if (!token) return;
@@ -433,11 +432,15 @@ const ProjectProvider=({children})=>{
                 }
             }
             const {data}= await clientAxios.post(`/api/task/state/${id}`,{}, config)
-            const projectUpdated={...project}
-            projectUpdated.tasks= projectUpdated.tasks.map(taskState=>taskState._id ===data._id ? data : taskState)
-            setProject(projectUpdated)
+            // const projectUpdated={...project}
+            // projectUpdated.tasks= projectUpdated.tasks.map(taskState=>taskState._id ===data._id ? data : taskState)
+            // setProject(projectUpdated)
             setTask({})
             setAlert({})
+
+            //socket.io
+            socket.emit('changeState', data)
+
         }catch(error){
             console.log(error)
 
@@ -449,19 +452,36 @@ const ProjectProvider=({children})=>{
     }
 
     //socket.io
-    const submitTaskProject=(newTask)=>{
+    const submitTaskProject=(data)=>{
         //add task state
         const projectUpdated={...project}
-        projectUpdated.tasks=[...projectUpdated.tasks, newTask]
+        projectUpdated.tasks=[...projectUpdated.tasks, data]
         setProject(projectUpdated)
-
     }
 
     const deleteTaskProject=(deleteTask)=>{
         const projectUpdated={...project}
         projectUpdated.tasks = projectUpdated.tasks?.filter(taskState=>taskState._id !== deleteTask._id)
         setProject(projectUpdated)
+    }
 
+    const updateTaskIo=(data)=>{
+        const projectUpdated={...project}
+        projectUpdated.tasks= projectUpdated.tasks?.map(taskState=>taskState._id ===data._id ? data : taskState)
+        setProject(projectUpdated)
+
+    }
+
+    const changeState=(data)=>{
+        const projectUpdated={...project}
+        projectUpdated.tasks= projectUpdated.tasks.map(taskState=>taskState._id ===data._id ? data : taskState)
+        setProject(projectUpdated)
+    }
+
+    const signOff=()=>{
+        setProjects([])
+        setProject({})
+        setAlert({})
     }
 
 
@@ -495,13 +515,14 @@ const ProjectProvider=({children})=>{
                 handleSearch,
                 search,
                 submitTaskProject,
-                deleteTaskProject
+                deleteTaskProject,
+                updateTaskIo,
+                changeState,
+                signOff
             }}
-
 
         >{children}
         </ProjectContext.Provider>
-
     )
 }
 

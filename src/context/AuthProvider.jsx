@@ -41,13 +41,18 @@ const AuthProvider=({children})=>{
 
     }, [])
 
+    const signOFF=()=>{
+        setAuth({})
+    }
+
 
 
     return (
         <AuthContext.Provider value={{
             auth,
             setAuth,
-            waiting
+            waiting,
+            signOFF
         }}>
             {children}
         </AuthContext.Provider>
